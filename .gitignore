@@ -1,0 +1,23 @@
+# Misc #
+todo.md
+issues.md
+emails.md
+notes.md
+website-data-401203-899945cfc301.json
+config.ini
+
+# Django #
+static/images/
+venv/
+db.sqlite3
+pycache
+*.log
+*.pot
+*.pyc
+*.pyo
+
+# IDE specific #
+.idea/
+
+# OS specific #
+.DS_Store
