@@ -1,0 +1,97 @@
+/*
+    DJANGO Admin styles
+*/
+
+/* VARIABLE DEFINITIONS */
+html[data-theme="light"],
+:root {
+    /* Base Colors */
+    --primary: #462255;
+    --secondary: #228B22;
+    --accent: #711D94FF;
+
+    /* Foreground Colors */
+    --primary-fg: #fff;
+    --body-fg: #333;
+    --body-quiet-color: #666;
+    --body-loud-color: #000;
+    --link-fg: #228B22;  /* Using the secondary color for links */
+    --error-fg: #ba2121;  /* Keep this for errors as it's a universal color */
+
+    /* Background Colors */
+    --body-bg: #fff;
+    --darkened-bg: #f8f8f8;
+    --selected-bg: #e4e4e4;
+    --selected-row: #E7D7E9;  /* A tint of the primary color */
+
+    /* Header */
+    --header-color: #ffc;
+    --header-branding-color: var(--accent);
+    --header-bg: var(--primary);
+    --header-link-color: var(--primary-fg);
+
+    /* Breadcrumbs */
+    --breadcrumbs-fg: #E7D7E9;  /* A tint of the primary color */
+    --breadcrumbs-link-fg: var(--body-bg);
+    --breadcrumbs-bg: var(--secondary);
+
+    /* Links */
+    --link-hover-color: #036;
+    --link-selected-fg: #5b80b2;
+
+    /* Borders */
+    --hairline-color: #e8e8e8;
+    --border-color: #ccc;
+
+    /* Messages */
+    --message-success-bg: #dfd;
+    --message-warning-bg: #ffc;
+    --message-error-bg: #ffefef;
+
+    /* Buttons */
+    --button-fg: #fff;
+    --button-bg: var(--primary);
+    --button-hover-bg: #5B3C78;  /* A shade of the primary color */
+    --default-button-bg: var(--secondary);
+    --default-button-hover-bg: #036010;  /* A shade of the secondary color */
+    --close-button-bg: #747474;
+    --close-button-hover-bg: #333;
+    --delete-button-bg: #ba2121;
+    --delete-button-hover-bg: #a41515;
+    --object-tools-fg: var(--button-fg);
+    --object-tools-bg: var(--close-button-bg);
+    --object-tools-hover-bg: var(--close-button-hover-bg);
+
+    --font-family-primary:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        system-ui,
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif,
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-family-monospace:
+        ui-monospace,
+        Menlo,
+        Monaco,
+        "Cascadia Mono",
+        "Segoe UI Mono",
+        "Roboto Mono",
+        "Oxygen Mono",
+        "Ubuntu Monospace",
+        "Source Code Pro",
+        "Fira Mono",
+        "Droid Sans Mono",
+        "Courier New",
+        monospace,
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+

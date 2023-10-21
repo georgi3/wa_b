@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ site_title|default:"Welfare Avenue Admin Portal" }}{% endblock %}
+
+{% block branding %}
+   <h1 id="site-name"><a href="{% url 'admin:index' %}" style="color: #fff;">{{ site_header|default:"Welfare Avenue" }}</a></h1>
+{% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
+{% endblock %}
