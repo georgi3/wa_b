@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config.get('django', 'SECRET_KEY')
 DJANGO_ENV = config.get('django', "DJANGO_ENV")
+MY_APP_DOMAIN = config.get('django', 'MY_APP_DOMAIN')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_ENV == "development"
 
@@ -176,7 +177,7 @@ if DJANGO_ENV == "development":
         "http://127.0.0.1:3000",
     ]
 
-    LOGIN_REDIRECT_URL = 'http://localhost:3000/accounts/login/google-oauth2/complete/'
+    LOGIN_REDIRECT_URL = 'http://localhost:8000/accounts/login/google-oauth2/complete/'
     LOGOUT_REDIRECT_URL = 'http://localhost:3000/'
 
     # DJOSER CONFIG for development
@@ -188,12 +189,12 @@ else:
     ALLOWED_HOSTS = ['your_production_domain.com']
 
     CORS_ALLOWED_ORIGINS = [
-        "https://welfareave.org",
+        f"https://{MY_APP_DOMAIN}",
     ]
 
-    LOGIN_REDIRECT_URL = 'https://welfareave.org/accounts/login/google-oauth2/complete/'
-    LOGOUT_REDIRECT_URL = 'https://welfareave.org/'
+    LOGIN_REDIRECT_URL = f'https://{MY_APP_DOMAIN}/accounts/login/google-oauth2/complete/'
+    LOGOUT_REDIRECT_URL = f'https://{MY_APP_DOMAIN}/'
 
     # DJOSER CONFIG for production
-    DOMAIN = 'welfareave.org'
-    SITE_NAME = 'welfareave.org'
+    DOMAIN = f'{MY_APP_DOMAIN}'
+    SITE_NAME = f'{MY_APP_DOMAIN}'

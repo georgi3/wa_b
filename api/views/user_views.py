@@ -17,7 +17,7 @@ from api.serializers.user_serializers import UserSerializer, UserSerializerWithT
     UserAppliedEvents
 from api.utilities.views_utilities import is_position_full, apply_volunteer, add_position_to_profile, \
     create_update_fields_dict
-from backend.settings import DJANGO_ENV
+from backend.settings import DJANGO_ENV, MY_APP_DOMAIN
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -200,7 +200,7 @@ def google_login_complete(request):
     if DJANGO_ENV == 'development':
         redirect_url = f"http://localhost:3000/login/callback?token={token}"
     else:
-        redirect_url = f"http://welfareave.org/login/callback?token={token}"
+        redirect_url = f"http://{MY_APP_DOMAIN}/login/callback?token={token}"
 
     return HttpResponseRedirect(redirect_url)
 
