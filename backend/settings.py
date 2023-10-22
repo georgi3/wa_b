@@ -177,7 +177,7 @@ if DJANGO_ENV == "development":
         "http://127.0.0.1:3000",
     ]
 
-    LOGIN_REDIRECT_URL = 'http://localhost:8000/accounts/login/google-oauth2/complete/'
+    LOGIN_REDIRECT_URL = '/accounts/login/google-oauth2/complete/'
     LOGOUT_REDIRECT_URL = 'http://localhost:3000/'
 
     # DJOSER CONFIG for development
@@ -186,13 +186,13 @@ if DJANGO_ENV == "development":
 
 else:
     # Production settings
-    ALLOWED_HOSTS = ['your_production_domain.com']
+    ALLOWED_HOSTS = [f'{MY_APP_DOMAIN}']
 
     CORS_ALLOWED_ORIGINS = [
         f"https://{MY_APP_DOMAIN}",
     ]
 
-    LOGIN_REDIRECT_URL = f'https://{MY_APP_DOMAIN}/accounts/login/google-oauth2/complete/'
+    LOGIN_REDIRECT_URL = f'/accounts/login/google-oauth2/complete/'
     LOGOUT_REDIRECT_URL = f'https://{MY_APP_DOMAIN}/'
 
     # DJOSER CONFIG for production
