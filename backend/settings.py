@@ -130,6 +130,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 MEDIA_ROOT = "static/images"
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Google Staff
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config.get('google', 'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
