@@ -193,6 +193,7 @@ def staff_users(request):
     serialized_members = UserSerializer(members, many=True)
     return Response(serialized_members.data)
 
+
 @login_required
 def google_login_complete(request):
     token = request.session.get('token')
