@@ -22,12 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config.get('django', 'SECRET_KEY')
-
+DJANGO_ENV = config.get('django', "DJANGO_ENV")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+DEBUG = DJANGO_ENV == "development"
 
 INSTALLED_APPS = [
     "api.apps.ApiConfig",
@@ -113,13 +110,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "America/New_York"
 USE_I18N = True
 USE_TZ = True
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -129,18 +129,6 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 MEDIA_ROOT = "static/images"
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-# CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # change it
-    "http://127.0.0.1:3000",
-]
-
 
 # Google Staff
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config.get('google', 'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
@@ -163,15 +151,12 @@ SOCIAL_AUTH_PIPELINE = (
     'api.pipelines.user_details',  # protects first, last names from changing 'social_core.pipeline.user.user_details',
     'api.pipelines.generate_token',
 )
-# if os.environ.get('DJANGO_ENV') == 'production':
-#     LOGIN_REDIRECT_URL = 'https://yourproductionfrontendurl.com/'
-# else:
-#     LOGIN_REDIRECT_URL = 'http://localhost:3000/'
-LOGIN_REDIRECT_URL = '/accounts/login/google-oauth2/complete/'
-LOGOUT_REDIRECT_URL = 'http://localhost:3000/'  # redirect to the home page after logout
-
 SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
     'prompt': 'select_account'
+}
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': "password-reset/done/{uid}/{token}/",
+    'PASSWORD_RESET_CONFIRM_REVERSE': False,
 }
 
 # Email Config
@@ -182,13 +167,33 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = config.get("email", "EMAIL_SENDER")
 
-# DJOSER CONFIG
-DOMAIN = 'localhost:3000'
-SITE_NAME = 'localhost:3000'
-DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': "password-reset/done/{uid}/{token}/",
-    'PASSWORD_RESET_CONFIRM_REVERSE': False,
+if DJANGO_ENV == "development":
+    # Development settings
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-}
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
 
+    LOGIN_REDIRECT_URL = 'http://localhost:3000/accounts/login/google-oauth2/complete/'
+    LOGOUT_REDIRECT_URL = 'http://localhost:3000/'
 
+    # DJOSER CONFIG for development
+    DOMAIN = 'localhost:3000'
+    SITE_NAME = 'localhost:3000'
+
+else:
+    # Production settings
+    ALLOWED_HOSTS = ['your_production_domain.com']
+
+    CORS_ALLOWED_ORIGINS = [
+        "https://welfareave.org",
+    ]
+
+    LOGIN_REDIRECT_URL = 'https://welfareave.org/accounts/login/google-oauth2/complete/'
+    LOGOUT_REDIRECT_URL = 'https://welfareave.org/'
+
+    # DJOSER CONFIG for production
+    DOMAIN = 'welfareave.org'
+    SITE_NAME = 'welfareave.org'
