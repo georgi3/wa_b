@@ -17,6 +17,7 @@ from api.serializers.user_serializers import UserSerializer, UserSerializerWithT
     UserAppliedEvents
 from api.utilities.views_utilities import is_position_full, apply_volunteer, add_position_to_profile, \
     create_update_fields_dict
+from backend.settings import DJANGO_ENV
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -192,12 +193,15 @@ def staff_users(request):
     serialized_members = UserSerializer(members, many=True)
     return Response(serialized_members.data)
 
-# TODO: change localhost setup config
 @login_required
 def google_login_complete(request):
     token = request.session.get('token')
     # Assuming frontend is served at `http://localhost:3000`
-    redirect_url = f"http://localhost:3000/login/callback?token={token}"
+    if DJANGO_ENV == 'development':
+        redirect_url = f"http://localhost:3000/login/callback?token={token}"
+    else:
+        redirect_url = f"http://welfareave.org/login/callback?token={token}"
+
     return HttpResponseRedirect(redirect_url)
 
 
