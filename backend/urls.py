@@ -18,16 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from api.views import user_views as api_views
+from api.views import user_views, base_views
 
 urlpatterns = [
+    path("", base_views.serve_react, name="serve_react"),
     path("admin/", admin.site.urls),
     path("api/", include("api.urls.base_urls")),
     path("api/users/", include("api.urls.users_urls")),
     path("api/events/", include("api.urls.events_urls")),
     path('accounts/', include('social_django.urls', namespace='social')),
-    path('accounts/login/google-oauth2/complete/', api_views.google_login_complete, name='google-login-complete'),
-    path('accounts/logout/', api_views.google_logout, name='google-logout'),
+    path('accounts/login/google-oauth2/complete/', user_views.google_login_complete, name='google-login-complete'),
+    path('accounts/logout/', user_views.google_logout, name='google-logout'),
     path('api/auth/', include('djoser.urls'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
