@@ -5,6 +5,11 @@ from rest_framework.response import Response
 from backend.settings import DEFAULT_FROM_EMAIL
 from api.models import WAGallery, ContactForm, AutomatedEmail
 from api.serializers.base_serializers import WAGallerySerializer
+from django.shortcuts import render
+
+@api_view(['GET'])
+def serve_react(request):
+    return render(request, "index.html")
 
 
 @api_view(["GET"])
