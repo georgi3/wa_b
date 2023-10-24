@@ -8,6 +8,7 @@ config.ini
 
 # Django #
 static/images/
+staticfiles/
 venv/
 db.sqlite3
 pycache
