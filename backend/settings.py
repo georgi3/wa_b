@@ -187,11 +187,19 @@ if DJANGO_ENV == "development":
 
 else:
     # Production settings
-    ALLOWED_HOSTS = [f'{MY_APP_DOMAIN}']
-
+    ALLOWED_HOSTS = [
+        f'{MY_APP_DOMAIN}',
+        f'www.{MY_APP_DOMAIN}'
+    ]
     CORS_ALLOWED_ORIGINS = [
         f"https://{MY_APP_DOMAIN}",
+        f'www.{MY_APP_DOMAIN}'
     ]
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{MY_APP_DOMAIN}",
+        f"https://www.{MY_APP_DOMAIN}"
+    ]
+    CORS_ALLOW_CREDENTIALS = True
 
     LOGIN_REDIRECT_URL = f'/accounts/login/google-oauth2/complete/'
     LOGOUT_REDIRECT_URL = f'https://{MY_APP_DOMAIN}/'
