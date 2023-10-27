@@ -93,6 +93,7 @@ class Volunteer(models.Model):
     is_dishwasher = models.BooleanField("Dishwasher", default=False)
     is_photographer = models.BooleanField("Photographer", default=False)
     joined_date = models.DateTimeField("Joined At", auto_now_add=True, null=True)
+    notes = models.TextField("Notes", blank=True, null=True)
 
     def __str__(self):
         if self.user_id:
