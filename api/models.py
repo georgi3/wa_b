@@ -17,7 +17,7 @@ class VolunteeringEvents(models.Model):
     event_poster = models.ImageField("Event Poster", null=True)
     body = models.TextField("Event Description")
     datetime = models.DateTimeField("Date&Time", help_text="24 hour clock")
-    location = models.CharField("Location", max_length=100, default="Beri UQAM")
+    location = models.CharField("Location", max_length=100, default="Berri-UQAM")
     end_time = models.TimeField("Ending Time", help_text="24 hour clock")
     mealsServed = models.IntegerField("Meals Served", blank=True, null=True)
     summary = models.TextField("Event Summary", blank=True, null=True)
