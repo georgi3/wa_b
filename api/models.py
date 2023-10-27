@@ -85,7 +85,7 @@ class Volunteer(models.Model):
     phone = models.CharField("phone", max_length=12)
     organization = models.CharField("Volunteer's Affiliation", help_text="Organization", max_length=100, blank=True, null=True)
     address = models.CharField("Street Address", max_length=128, blank=True, null=True)
-    zip_code = models.CharField("Zip Code", max_length=6, blank=True, null=True)
+    zip_code = models.CharField("Zip Code", max_length=7, blank=True, null=True)
     car_type = models.CharField("Car Type", max_length=100, blank=True, null=True)
     is_driver = models.BooleanField("Driver", default=False)
     is_cook = models.BooleanField("Cook", default=False)
