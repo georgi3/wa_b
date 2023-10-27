@@ -193,7 +193,7 @@ else:
     ]
     CORS_ALLOWED_ORIGINS = [
         f"https://{MY_APP_DOMAIN}",
-        f'www.{MY_APP_DOMAIN}'
+        f'https://www.{MY_APP_DOMAIN}'
     ]
     CSRF_TRUSTED_ORIGINS = [
         f"https://{MY_APP_DOMAIN}",
