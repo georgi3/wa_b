@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
+from django.shortcuts import redirect
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
 from datetime import timedelta
@@ -97,3 +98,7 @@ def send_google_registration_email(user, first_name):
         )
     except ObjectDoesNotExist:
         pass
+
+
+def redirect_to_complete(request, backend, *args, **kwargs):
+    return redirect(to='/accounts/login/google-oauth2/complete/')
