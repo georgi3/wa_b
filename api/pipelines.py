@@ -6,7 +6,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 from api.models import AutomatedEmail
-from backend.settings import DEFAULT_FROM_EMAIL
+from backend.settings import DEFAULT_FROM_EMAIL, MY_APP_DOMAIN, DJANGO_ENV
 
 
 def custom_social_user(backend, uid, user=None, *args, **kwargs):
@@ -100,5 +100,12 @@ def send_google_registration_email(user, first_name):
         pass
 
 
-def redirect_to_complete(request, backend, *args, **kwargs):
-    return redirect(to='/accounts/login/google-oauth2/complete/')
+def redirect_to_complete(strategy, details, user=None, *args, **kwargs):
+    token = strategy.session_get('token')
+    if strategy.request.session.test_cookie_worked():
+        strategy.request.session.delete_test_cookie()
+    if DJANGO_ENV == 'development':
+        redirect_url = f"http://localhost:3000/login/callback?token={token}"
+    else:
+        redirect_url = f"https://{MY_APP_DOMAIN}/login/callback?token={token}"
+    return redirect(redirect_url)
