@@ -1,12 +1,26 @@
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from backend.settings import DEFAULT_FROM_EMAIL
+from backend.settings import DEFAULT_FROM_EMAIL, DJANGO_ENV, MY_APP_DOMAIN
 from api.models import WAGallery, ContactForm, AutomatedEmail
 from api.serializers.base_serializers import WAGallerySerializer
 from django.shortcuts import render
 
+
+@login_required
+def root_redirect(request):
+    """Workaround solution for Google auth since it was not redirecting correctly to google_login_complete"""
+    token = request.session.get('token')
+    # Assuming frontend is served at `http://localhost:3000`
+    if DJANGO_ENV == 'development':
+        redirect_url = f"http://localhost:3000/login/callback?token={token}"
+    else:
+        redirect_url = f"https://{MY_APP_DOMAIN}/login/callback?token={token}"
+
+    return HttpResponseRedirect(redirect_url)
 
 @api_view(["GET"])
 def get_wa_galleries(request):

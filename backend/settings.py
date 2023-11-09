@@ -140,7 +140,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.google.GoogleOAuth2',
 )
-
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
@@ -177,8 +176,7 @@ if DJANGO_ENV == "development":
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
-
-    LOGIN_REDIRECT_URL = '/accounts/login/google-oauth2/complete/'
+    # LOGIN_REDIRECT_URL = '/accounts/login/google-oauth2/complete/'
     LOGOUT_REDIRECT_URL = 'http://localhost:3000/'
 
     # DJOSER CONFIG for development
@@ -201,7 +199,7 @@ else:
     ]
     CORS_ALLOW_CREDENTIALS = True
 
-    LOGIN_REDIRECT_URL = f'/accounts/login/google-oauth2/complete/'
+    # LOGIN_REDIRECT_URL = f'/accounts/login/google-oauth2/complete/'
     LOGOUT_REDIRECT_URL = f'https://{MY_APP_DOMAIN}/'
 
     # DJOSER CONFIG for production
