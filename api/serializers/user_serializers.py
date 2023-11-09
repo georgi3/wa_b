@@ -29,13 +29,14 @@ class UserSerializer(serializers.ModelSerializer):
     profile_picture = serializers.SerializerMethodField(read_only=True)
     community_position = serializers.SerializerMethodField(read_only=True)
     total_volunteering_hours = serializers.SerializerMethodField(read_only=True)
+    volunteering_hours_last_30 = serializers.SerializerMethodField(read_only=True)
     linked_events = serializers.SerializerMethodField(read_only=True)
     is_wa_member = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
         fields = ["id", "first_name", "last_name",  "name", "about_me", "community_position", "profile_picture",
-                  "total_volunteering_hours", "linked_events", "is_wa_member"]
+                  "total_volunteering_hours", "volunteering_hours_last_30", "linked_events", "is_wa_member"]
 
     def get_name(self, obj):
         return f"{obj.first_name} {obj.last_name}"
@@ -72,6 +73,13 @@ class UserSerializer(serializers.ModelSerializer):
         try:
             volunteer = Volunteer.objects.get(user_id=obj.id)
             return volunteer.total_volunteering_hours
+        except Volunteer.DoesNotExist:
+            return 0
+
+    def get_volunteering_hours_last_30(self, obj):
+        try:
+            volunteer = Volunteer.objects.get(user_id=obj.id)
+            return volunteer.volunteering_hours_last_30
         except Volunteer.DoesNotExist:
             return 0
 
