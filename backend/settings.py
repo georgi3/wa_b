@@ -151,6 +151,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'api.pipelines.user_details',  # protects first, last names from changing 'social_core.pipeline.user.user_details',
     'api.pipelines.generate_token',
+    'api.pipelines.redirect_to_complete',
 )
 SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
     'prompt': 'select_account'
@@ -176,7 +177,7 @@ if DJANGO_ENV == "development":
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
-    # LOGIN_REDIRECT_URL = '/accounts/login/google-oauth2/complete/'
+    LOGIN_REDIRECT_URL = '/accounts/login/google-oauth2/complete/'
     LOGOUT_REDIRECT_URL = 'http://localhost:3000/'
 
     # DJOSER CONFIG for development
@@ -199,7 +200,7 @@ else:
     ]
     CORS_ALLOW_CREDENTIALS = True
 
-    # LOGIN_REDIRECT_URL = f'/accounts/login/google-oauth2/complete/'
+    LOGIN_REDIRECT_URL = f'/accounts/login/google-oauth2/complete/'
     LOGOUT_REDIRECT_URL = f'https://{MY_APP_DOMAIN}/'
 
     # DJOSER CONFIG for production
