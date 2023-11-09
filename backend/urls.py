@@ -21,7 +21,6 @@ from django.conf.urls.static import static
 from api.views import user_views, base_views
 
 urlpatterns = [
-    path("", base_views.serve_react, name="serve_react"),
     path("admin/", admin.site.urls),
     path("api/", include("api.urls.base_urls")),
     path("api/users/", include("api.urls.users_urls")),
