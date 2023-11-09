@@ -63,7 +63,7 @@ class VolunteerManager(models.Manager):
     #     )
     def top_users(self):
         thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
-        top_three_volunteers = User.objects.annotate(
+        volunteers_with_hours = User.objects.annotate(
             total_hours=models.Sum(
                 'volunteer__assignments__volunteering_hours',
                 filter=models.Q(
@@ -73,21 +73,7 @@ class VolunteerManager(models.Manager):
                 )
             )
         ).filter(total_hours__gt=0).order_by('-total_hours')[:3]
-
-        total_hours_for_top_three = User.objects.filter(
-            id__in=models.Subquery(top_three_volunteers.values('id'))
-        ).annotate(
-            total_hours=models.Sum(
-                'volunteer__assignments__volunteering_hours',
-                filter=models.Q(
-                    volunteer__assignments__volunteering_event__datetime__gte=thirty_days_ago,
-                    volunteer__assignments__volunteering_event__datetime__lte=timezone.now(),
-                    volunteer__assignments__confirm_participation=True
-                )
-            )
-        ).order_by('-total_hours')
-
-        return total_hours_for_top_three
+        return volunteers_with_hours
 
 
 class Volunteer(models.Model):
@@ -119,6 +105,17 @@ class Volunteer(models.Model):
     def total_volunteering_hours(self):
         return self.assignments.filter(confirm_participation=True).aggregate(
             total_hours=models.Sum('volunteering_hours'))['total_hours'] or 0
+    @property
+    def volunteering_hours_last_30(self):
+        thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
+        total_hours = self.assignments.filter(
+            volunteering_event__datetime__gte=thirty_days_ago,
+            volunteering_event__datetime__lte=timezone.now(),
+            confirm_participation=True
+        ).aggregate(
+            total_hours=models.Sum('volunteering_hours')
+        )['total_hours']
+        return total_hours if total_hours is not None else 0
 
     @property
     def linked_events(self):
