@@ -21,7 +21,6 @@ from django.conf.urls.static import static
 from api.views import user_views, base_views
 
 urlpatterns = [
-    path("", base_views.root_redirect, name="root_redirect"),  # google auth workaround for redirect
     path("admin/", admin.site.urls),
     path("api/", include("api.urls.base_urls")),
     path("api/users/", include("api.urls.users_urls")),
