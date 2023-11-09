@@ -26,7 +26,6 @@ urlpatterns = [
     path("api/users/", include("api.urls.users_urls")),
     path("api/events/", include("api.urls.events_urls")),
     path('accounts/', include('social_django.urls', namespace='social')),
-    path('accounts/login/google-oauth2/complete/', user_views.google_login_complete, name='google-login-complete'),
     path('accounts/logout/', user_views.google_logout, name='google-logout'),
     path('api/auth/', include('djoser.urls'))
 
