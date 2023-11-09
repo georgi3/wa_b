@@ -201,7 +201,7 @@ def google_login_complete(request):
     if DJANGO_ENV == 'development':
         redirect_url = f"http://localhost:3000/login/callback?token={token}"
     else:
-        redirect_url = f"http://{MY_APP_DOMAIN}/login/callback?token={token}"
+        redirect_url = f"https://{MY_APP_DOMAIN}/login/callback?token={token}"
 
     return HttpResponseRedirect(redirect_url)
 
