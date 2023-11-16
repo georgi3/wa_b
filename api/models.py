@@ -135,12 +135,14 @@ class VolunteerAssignment(models.Model):
     SERVER = "Server"
     DISHWASHER = "Dishwasher"
     PHOTOGRAPHER = "Photographer"
+    LEADER = "Leader"
     VOLUNTEER_CHOICES = [
         (DRIVER, "Driver"),
         (COOK, "Cook"),
         (SERVER, "Server"),
         (DISHWASHER, "Dishwasher"),
         (PHOTOGRAPHER, "Photographer"),
+        (LEADER, "Leader"),
     ]
     volunteering_event = models.ForeignKey(to=VolunteeringEvents, on_delete=models.SET_NULL, null=True,
                                            related_name="assignments")
