@@ -16,7 +16,7 @@ from api.models import UserProfile, Volunteer, VolunteerAssignment, Volunteering
 from api.serializers.user_serializers import UserSerializer, UserSerializerWithToken, MyTokenObtainPairSerializer, \
     UserAppliedEvents
 from api.utilities.views_utilities import is_position_full, apply_volunteer, add_position_to_profile, \
-    create_update_fields_dict
+    create_update_fields_dict, update_last_application_date
 from backend.settings import DJANGO_ENV, MY_APP_DOMAIN
 
 
@@ -130,6 +130,7 @@ def volunteer_application(request):
         )
         event = get_object_or_404(VolunteeringEvents, pk=event_id)
         add_position_to_profile(position=vol_position, volunteer=volunteer)
+        update_last_application_date(volunteer=volunteer)
         if VolunteerAssignment.objects.filter(volunteering_event=event, volunteer=volunteer,
                                               assigned_position=vol_position).exists():
             return Response({"detail": "You have already applied for this position."},
