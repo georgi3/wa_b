@@ -39,10 +39,11 @@ class UserAdmin(BaseUserAdmin):
 @admin.register(Volunteer)
 class VolunteerAdmin(admin.ModelAdmin):
     list_display = ['user_id', 'name', 'phone', 'address', 'zip_code', 'is_driver', 'is_cook', 'is_server',
-                    'is_dishwasher', 'is_photographer']
+                    'is_dishwasher', 'is_photographer', 'last_applied']
+    readonly_fields = ['last_applied']
     list_per_page = 25
     search_fields = ['name', 'email', 'organization']
-    list_filter = ['joined_date', 'organization', 'is_driver', 'is_cook', 'is_server', 'is_dishwasher',
+    list_filter = ['last_applied', 'joined_date', 'organization', 'is_driver', 'is_cook', 'is_server', 'is_dishwasher',
                    'is_photographer']
     actions = [export_selected_volunteers_to_excel, export_selected_volunteers_to_sheets]
 
