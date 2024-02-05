@@ -1,3 +1,4 @@
+from datetime import datetime
 from api.models import VolunteerAssignment
 
 
@@ -92,6 +93,11 @@ def add_position_to_profile(position, volunteer):
         volunteer.is_dishwasher = True
     elif position == "Photographer":
         volunteer.is_photographer = True
+    volunteer.save()
+
+
+def update_last_application_date(volunteer):
+    volunteer.last_applied = datetime.now().date()
     volunteer.save()
 
 
