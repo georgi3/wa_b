@@ -106,6 +106,7 @@ class Volunteer(models.Model):
     def total_volunteering_hours(self):
         return self.assignments.filter(confirm_participation=True).aggregate(
             total_hours=models.Sum('volunteering_hours'))['total_hours'] or 0
+
     @property
     def volunteering_hours_last_30(self):
         thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
