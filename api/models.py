@@ -187,8 +187,8 @@ class VolunteerAssignment(models.Model):
             })
 
     class Meta:
-        verbose_name = 'Volunteer'
-        verbose_name_plural = 'Volunteers'
+        verbose_name = 'Volunteer Assignment'
+        verbose_name_plural = 'Volunteers Assignments'
 
 
 class FundraiserEvents(models.Model):
