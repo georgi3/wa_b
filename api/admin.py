@@ -36,11 +36,24 @@ class UserAdmin(BaseUserAdmin):
     is_wa_member.short_description = 'WA Member'
 
 
+class VolunteerAssignmentBackwardsInline(admin.TabularInline):  # or admin.StackedInline
+    model = VolunteerAssignment
+    fk_name = 'volunteer'  # ForeignKey field to the Volunteer model
+    extra = 0
+    exclude = ['is_withdrawn']
+    readonly_fields = ['volunteering_event', 'assigned_position', 'approve_participation', 'volunteering_hours',
+                       'confirm_participation', 'is_withdrawn', 'reject_participation']
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Volunteer)
 class VolunteerAdmin(admin.ModelAdmin):
     list_display = ['user_id', 'name', 'phone', 'address', 'zip_code', 'is_driver', 'is_cook', 'is_server',
                     'is_dishwasher', 'is_photographer', 'last_applied']
     readonly_fields = ['last_applied']
+    inlines = [VolunteerAssignmentBackwardsInline]
     list_per_page = 25
     search_fields = ['name', 'email', 'organization']
     list_filter = ['last_applied', 'joined_date', 'organization', 'is_driver', 'is_cook', 'is_server', 'is_dishwasher',
