@@ -156,18 +156,18 @@ class VolunteerAssignment(models.Model):
     confirm_participation = models.BooleanField("Participation Confirmed",
                                                 help_text="Check to confirm volunteer's participation", default=False)
     is_withdrawn = models.BooleanField("Is Withdrawn", help_text="Applicant Withdrew their application", default=False)
-    reject_participation = models.BooleanField("Reject", help_text="Check to reject the applicant", default=False)
+    waitlist_participation = models.BooleanField("Waitlist", help_text="Check to waitlist the applicant", default=False)
 
     _approve_participation_cache = None
     _confirm_participation_cache = None
-    _reject_participation_cache = None
+    _waitlist_participation_cache = None
     _withdraw_participation_cache = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._approve_participation_cache = self.approve_participation
         self._confirm_participation_cache = self.confirm_participation
-        self._reject_participation_cache = self.reject_participation
+        self._waitlist_participation_cache = self.waitlist_participation
         self._withdraw_participation_cache = self.is_withdrawn
 
     def __str__(self):
@@ -180,10 +180,10 @@ class VolunteerAssignment(models.Model):
     def clean(self):
         super().clean()  # call the parent class's clean method
 
-        if self.approve_participation and self.reject_participation:
+        if self.approve_participation and self.waitlist_participation:
             raise ValidationError({
-                'approve_participation': 'Both approve and reject participation cannot be True at the same time.',
-                'reject_participation': 'Both approve and reject participation cannot be True at the same time.',
+                'approve_participation': 'Both approve and waitlist participation cannot be True at the same time.',
+                'waitlist_participation': 'Both approve and waitlist participation cannot be True at the same time.',
             })
 
     class Meta:
@@ -261,7 +261,7 @@ class AutomatedEmail(models.Model):
     REGISTRATION = "Registration"
     APPLICATION = "Application"
     APPROVAL = "Approval"
-    REJECTION = "Rejection"
+    WAITLIST = "Waitlist"
     WITHDRAWAL = "Withdrawal"
     EVENT_CANCELLATION = "Event_Cancellation"
     CONFIRMATION = "Confirmation"
@@ -270,7 +270,7 @@ class AutomatedEmail(models.Model):
         (REGISTRATION, "Registration"),
         (APPLICATION, "Application"),
         (APPROVAL, "Approval"),
-        (REJECTION, "Rejection"),
+        (WAITLIST, "Waitlist"),
         (WITHDRAWAL, "Withdrawal"),
         (EVENT_CANCELLATION, "Event Cancellation"),
         (CONFIRMATION, "Confirmation"),
