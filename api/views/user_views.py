@@ -123,6 +123,7 @@ def volunteer_application(request):
         zip_code = request.data.get('zip_code')
         car_type = request.data.get('car_type')
         vol_position = request.data.get('vol_position')
+        food_drop_off = request.data.get('food_drop_off')
         update_fields = create_update_fields_dict(phone, organization, car_type, address, zip_code)
         volunteer, _ = Volunteer.objects.update_or_create(
             user_id=User.objects.get(id=user_id),
@@ -151,7 +152,7 @@ def volunteer_application(request):
                 VolunteerAssignment.PHOTOGRAPHER: "Maximum number of photographers has been reached for this event.",
             }
             return Response({"detail": messages[vol_position]}, status=status.HTTP_400_BAD_REQUEST)
-        apply_volunteer(event, vol_position, volunteer)
+        apply_volunteer(event, vol_position, volunteer, food_drop_off)
         return Response({"detail": "Volunteer application successful."}, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
