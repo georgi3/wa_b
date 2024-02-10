@@ -157,7 +157,8 @@ class VolunteerAssignment(models.Model):
                                                 help_text="Check to confirm volunteer's participation", default=False)
     is_withdrawn = models.BooleanField("Is Withdrawn", help_text="Applicant Withdrew their application", default=False)
     waitlist_participation = models.BooleanField("Waitlist", help_text="Check to waitlist the applicant", default=False)
-
+    food_drop_off = models.BooleanField('Food Is Dropped Off', help_text='Cook will drop off the food', default=False,
+                                        null=True, blank=True)
     _approve_participation_cache = None
     _confirm_participation_cache = None
     _waitlist_participation_cache = None
