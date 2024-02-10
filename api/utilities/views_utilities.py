@@ -72,9 +72,10 @@ def is_position_full(event, position, position_limit):
     return count >= position_limit
 
 
-def apply_volunteer(event, position, volunteer):
+def apply_volunteer(event, position, volunteer, food_drop_off):
     """
     Utility function for volunteer_application() view
+    :param food_drop_off:
     :param event:
     :param position:
     :param volunteer:
@@ -87,6 +88,7 @@ def apply_volunteer(event, position, volunteer):
         approve_participation=False,
         confirm_participation=False,
         volunteering_hours=2,
+        food_drop_off=food_drop_off
     )
 
 
