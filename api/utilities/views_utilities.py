@@ -2,6 +2,15 @@ from datetime import datetime
 from api.models import VolunteerAssignment
 
 
+def get_application_count_by_position(event):
+    application_count = dict()
+    positions = ['Driver', "Cook", "Server", "Dishwasher", "Photographer"]
+    for pos in positions:
+        application_count[f"{pos.lower()}_count"] = len(VolunteerAssignment.objects.filter(volunteering_event=event,
+                                                                                           assigned_position=pos))
+    return application_count
+
+
 def get_volunteering_spots(event):
     """
     Utility function for displaying volunteering events.
