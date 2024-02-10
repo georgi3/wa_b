@@ -66,14 +66,28 @@ class VolunteerAdmin(admin.ModelAdmin):
         return readonly_fields
 
 
-class VolunteerAssignmentInline(admin.TabularInline):  # or admin.StackedInline
+class VolunteerAssignmentInline(admin.StackedInline):  # or admin.StackedInline
     model = VolunteerAssignment
     fk_name = 'volunteering_event'  # ForeignKey field to the Volunteer model
     extra = 0
     exclude = ['is_withdrawn']
+    readonly_fields = ['volunteer_address', 'volunteer_phone', 'volunteer_email']
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def volunteer_phone(self, obj):
+        return obj.volunteer.phone
+
+    def volunteer_address(self, obj):
+        return obj.volunteer.address
+
+    def volunteer_email(self, obj):
+        return obj.volunteer.email
+
+    volunteer_phone.short_description = 'Phone Number'
+    volunteer_address.short_description = 'Address'
+    volunteer_email.short_description = 'Email'
 
 
 class VolunteerImagesInline(admin.TabularInline):  # or admin.StackedInline
