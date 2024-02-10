@@ -45,10 +45,12 @@ class EventStatusFilter(SimpleListFilter):
         now = timezone.now()
 
         if self.value() == 'incomplete':
-            return queryset.filter(summary__isnull=True, datetime__lte=now)
+            # This will exclude any records where summary is not NULL and not an empty string
+            return queryset.filter(Q(summary__isnull=True) | Q(summary__exact=''), datetime__lte=now)
 
         if self.value() == 'complete':
-            return queryset.filter(summary__isnull=False, datetime__lte=now)
+            # This will include any records where summary is not NULL and not an empty string
+            return queryset.exclude(Q(summary__isnull=True) | Q(summary__exact='')).filter(datetime__lte=now)
 
         return queryset
 
