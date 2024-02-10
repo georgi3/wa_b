@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -51,7 +52,7 @@ def filter_volunteering_events(request):
     events = VolunteeringEvents.objects.filter(
         id__in=event_ids,
         datetime__lt=timezone.now()
-    )
+    ).exclude(Q(summary__isnull=True) | Q(summary__exact=''))
     serialized_events = VolunteeringEventsSerializer(events, many=True)
     return Response(serialized_events.data)
 
