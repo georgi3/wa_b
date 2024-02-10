@@ -52,7 +52,7 @@ def application_email_dispatch(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=VolunteerAssignment)
 def volunteer_assignment_email_dispatch(sender, instance, **kwargs):
-    """Dispatches emails for assignment APPROVAL, CONFIRMATION, REJECTION, WITHDRAWAL"""
+    """Dispatches emails for assignment APPROVAL, CONFIRMATION, WAITLIST, WITHDRAWAL"""
     name = instance.volunteer.name
     volunteer_position = instance.assigned_position
     event_title = instance.volunteering_event.title
@@ -93,21 +93,21 @@ def volunteer_assignment_email_dispatch(sender, instance, **kwargs):
         except ObjectDoesNotExist:
             pass
 
-    # Check if participation was rejected
-    if not instance._reject_participation_cache and instance.reject_participation:
+    # Check if participation was waitlisted
+    if not instance._waitlist_participation_cache and instance.waitlist_participation:
         try:
-            rejection_email = AutomatedEmail.objects.get(email_type=AutomatedEmail.REJECTION)
+            waitlist_email = AutomatedEmail.objects.get(email_type=AutomatedEmail.WAITLIST)
             recipient_email = instance.volunteer.email
             send_mail(
-                subject=rejection_email.email_subject.format(name=name, volunteer_position=volunteer_position,
-                                                             event=event_title, date=date),
-                message=rejection_email.email_content.format(name=name, volunteer_position=volunteer_position,
-                                                             event=event_title, date=date),
+                subject=waitlist_email.email_subject.format(name=name, volunteer_position=volunteer_position,
+                                                            event=event_title, date=date),
+                message=waitlist_email.email_content.format(name=name, volunteer_position=volunteer_position,
+                                                            event=event_title, date=date),
                 from_email=DEFAULT_FROM_EMAIL,
                 recipient_list=[recipient_email],
                 fail_silently=False
             )
-            instance.delete()
+            # instance.delete()
         except ObjectDoesNotExist:
             pass
 
@@ -140,7 +140,7 @@ def volunteer_assignment_email_dispatch(sender, instance, **kwargs):
     # Update cached values after checking
     instance._approve_participation_cache = instance.approve_participation
     instance._confirm_participation_cache = instance.confirm_participation
-    instance._reject_participation_cache = instance.reject_participation
+    instance._waitlist_participation_cache = instance.waitlist_participation
     instance._withdraw_participation_cache = instance.is_withdrawn
 
 
