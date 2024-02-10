@@ -113,6 +113,9 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
     list_filter = [EventDateFilter, EventStatusFilter, 'hide_event']
     ordering = ['datetime']
 
+    class Media:
+        js = ('js/admin_cook_food_drop_off.js',)
+
 
 class FundraisingImagesInline(admin.TabularInline):  # or admin.StackedInline
     model = FundraisingPhotoGallery
