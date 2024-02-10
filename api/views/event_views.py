@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from api.models import VolunteeringEvents, FundraiserEvents
 from api.serializers.event_serializers import VolunteeringEventsSerializer, FundraiserEventsSerializer, \
     VolunteeringEventSerializer
-from api.utilities.views_utilities import get_volunteering_spots
+from api.utilities.views_utilities import get_volunteering_spots, get_application_count_by_position
 
 
 @api_view(["GET"])
@@ -21,8 +21,9 @@ def get_all_events(request):
 def get_volunteering_event(request, PK):
     volunteering_event = VolunteeringEvents.objects.get(id=PK, hide_event=False)
     volunteering_spots = get_volunteering_spots(volunteering_event)
+    application_count = get_application_count_by_position(volunteering_event)
     serializer = VolunteeringEventSerializer(volunteering_event, many=False)
-    return Response({**serializer.data, **volunteering_spots})
+    return Response({**serializer.data, **volunteering_spots, **application_count})
 
 
 @api_view(["GET"])
@@ -32,8 +33,9 @@ def get_volunteering_events(request):
 
     for event in events:
         volunteering_spots = get_volunteering_spots(event)
+        application_count = get_application_count_by_position(event)
         event_serializer = VolunteeringEventsSerializer(event, many=False)
-        events_with_spots.append({**event_serializer.data, **volunteering_spots})
+        events_with_spots.append({**event_serializer.data, **volunteering_spots, **application_count})
     return Response(events_with_spots)
 
 
