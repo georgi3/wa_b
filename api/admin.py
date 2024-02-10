@@ -42,10 +42,15 @@ class VolunteerAssignmentBackwardsInline(admin.TabularInline):  # or admin.Stack
     extra = 0
     exclude = ['is_withdrawn']
     readonly_fields = ['volunteering_event', 'assigned_position', 'approve_participation', 'volunteering_hours',
-                       'confirm_participation', 'is_withdrawn', 'waitlist_participation']
+                       'confirm_participation', 'waitlist_participation', 'event_date']
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def event_date(self, obj):
+        return obj.volunteering_event.datetime.date()
+
+    event_date.short_description = 'Date'
 
 
 @admin.register(Volunteer)
