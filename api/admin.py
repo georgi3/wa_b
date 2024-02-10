@@ -77,9 +77,10 @@ class VolunteerAssignmentInline(admin.StackedInline):  # or admin.StackedInline
     extra = 0
     exclude = ['is_withdrawn']
     readonly_fields = ['volunteer_address', 'volunteer_phone', 'volunteer_email']
+    can_delete = True
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return True
 
     def volunteer_phone(self, obj):
         return obj.volunteer.phone
