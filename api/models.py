@@ -159,6 +159,8 @@ class VolunteerAssignment(models.Model):
     waitlist_participation = models.BooleanField("Waitlist", help_text="Check to waitlist the applicant", default=False)
     food_drop_off = models.BooleanField('Food Is Dropped Off', help_text='Cook will drop off the food', default=False,
                                         null=True, blank=True)
+    has_confirmed = models.BooleanField(default=False)
+
     _approve_participation_cache = None
     _confirm_participation_cache = None
     _waitlist_participation_cache = None
