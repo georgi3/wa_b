@@ -15,8 +15,7 @@ Great news! Your application to volunteer as a {volunteer_position} for the {eve
 
 Warm regards,
 
-Welfare Avenue Team
-                </textarea>
+Welfare Avenue Team</textarea>
             </div>
             <div class="variables-box">
                 <p>Optional Variables: name, event, date, volunteer_position<br>
@@ -31,21 +30,14 @@ Welfare Avenue Team
         </div>
         <h2>Select Volunteers</h2>
     <table class="table-container">
-{#    <thead>#}
-{#        <tr>#}
-{#            <th>Volunteer</th>#}
-{#            <th>Staff Approval</th>#}
-{#            <th>Confirmation Sent</th>#}
-{#            <th>Volunteer Confirmation</th>#}
-{#        </tr>#}
-{#    </thead>#}
     <tbody>
         {% for position, group in assignments_grouped.items %}
             <tr>
-            <td colspan="4" class="category-header">{{ position }}</td>
+            <td colspan="5" class="category-header">{{ position }}</td>
             </tr>
             {% for assignment in group %}
                     <tr>
+                   <td>{{ forloop.counter }}</td>
                     <td>
                         <input type="checkbox" name="assignments" value="{{ assignment.id }}" class="volunteer-checkbox">
                         {{ assignment.volunteer.name }} ({{ assignment.assigned_position }})
