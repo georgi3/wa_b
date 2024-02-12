@@ -1,0 +1,79 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block content %}
+<div class="content">
+    <h1>Send Text Confirmation</h1>
+    <p>Are you sure you want to send texts to the selected volunteer event?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label for="custom_message">Customize the message (optional):</label>
+            <textarea id="custom_message" name="custom_message" rows="15" cols="70">
+Hello {name},
+
+Great news! Your application to volunteer as a {volunteer_position} for the {event} on {date} has been approved. We look forward to your participation.
+
+Warm regards,
+
+Welfare Avenue Team
+            </textarea>
+        </div>
+        <div>
+            <h2>Select Volunteers</h2>
+<table class="table-container">
+    {% for assignment in assignments %}
+        <tr>
+            <td>
+                <input type="checkbox" name="assignments" value="{{ assignment.id }}" class="volunteer-checkbox">
+                {{ assignment.volunteer.name }} ({{ assignment.assigned_position }})
+            </td>
+            {% if assignment.approve_participation %}
+            <td class='approved'>
+            {% else %}
+            <td class='not-approved'>
+            {% endif %}
+                {% if assignment.approve_participation %}
+                    Staff Approved
+                {% else %}
+                    Staff Has Not Approved
+                {% endif %}
+            </td>
+            {% if assignment.has_confirmed %}
+            <td class='approved'>
+            {% else %}
+            <td class='not-approved'>
+            {% endif %}
+                {% if assignment.has_confirmed %}
+                    Volunteer Confirmed
+                {% else %}
+                    Volunteer Has Not Confirmed
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+        </div>
+
+        <input type="hidden" name="event_id" value="{{ event.id }}" />
+        <input type="submit" name="confirm_send" value="Yes, send texts" id="submitButton" disabled />
+        <a href="{% url 'admin:api_volunteeringevents_changelist' %}">Cancel</a>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.volunteer-checkbox');
+        const submitButton = document.getElementById('submitButton');
+
+        function updateSubmitButtonState() {
+            const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+            submitButton.disabled = !isAnyChecked;
+        }
+
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', updateSubmitButtonState);
+        });
+    });
+</script>
+{% endblock %}
