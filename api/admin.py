@@ -1,3 +1,8 @@
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse, path
+from django.utils.html import format_html
+from django.core.signing import Signer
 from .filters import EventDateFilter, EventStatusFilter, CompleteFundraiserFilter
 from .models import VolunteeringEvents, FundraiserEvents, UserProfile, Volunteer, VolunteerAssignment, \
     VolunteeringPhotoGallery, FundraisingPhotoGallery, WAGallery, WAPhotos, AutomatedEmail, ContactForm
@@ -104,7 +109,7 @@ class VolunteerImagesInline(admin.TabularInline):  # or admin.StackedInline
 
 @admin.register(VolunteeringEvents)
 class VolunteeringEventsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'datetime',  'hide_event']
+    list_display = ['title', 'datetime',  'hide_event', 'send_texts_button']
     list_editable = ['hide_event']
     list_per_page = 25
     inlines = [VolunteerAssignmentInline, VolunteerImagesInline]
@@ -113,6 +118,85 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
     search_fields = ['title']
     list_filter = [EventDateFilter, EventStatusFilter, 'hide_event']
     ordering = ['datetime']
+
+    def send_texts_button(self, obj):
+        return format_html(
+            '<a class="button" href="{}">Send Texts</a>&nbsp;',
+            reverse('admin:send_texts_confirm', args=[obj.pk]),
+        )
+    send_texts_button.short_description = "Send Texts to Volunteers"
+    send_texts_button.allow_tags = True
+
+    # def send_texts(self, request, assignments_ids, message):
+    #     selected_assignments = VolunteerAssignment.objects.filter(id__in=assignments_ids)
+    #     messages_to_dispatch = list()
+    #     for assignment in selected_assignments:
+    #         phone = assignment.volunteer.phone
+    #         name = assignment.volunteer.name
+    #         position = assignment.assigned_position
+    #         event_title = assignment.volunteering_event.title
+    #         date = assignment.volunteering_event.datetime.date()
+    #         messages_to_dispatch.append({
+    #             "phone": phone,
+    #             "message": message.format(name=name, volunteer_position=position, event=event_title, date=date)
+    #         })
+    #     print(messages_to_dispatch)
+    #     # Perform the sending of text messages here
+    #     # Implement your logic to send the messages
+    #
+    #     self.message_user(request, "Text messages sent successfully.")
+    #     return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                '<path:event_id>/send_texts_confirm/',
+                self.admin_site.admin_view(self.send_texts_confirm),
+                name='send_texts_confirm',
+            ),
+        ]
+        return custom_urls + urls
+
+    def send_texts_confirm(self, request, event_id):
+        if event_id is None:
+            self.message_user(request, "No events selected.")
+            return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
+
+        assignments = VolunteerAssignment.objects.filter(volunteering_event=event_id)
+
+        if 'confirm_send' in request.POST:
+            selected_assignments = VolunteerAssignment.objects.filter(id__in=request.POST.getlist('assignments'))
+            message = request.POST.get('custom_message')
+            messages_to_dispatch = list()
+            signer = Signer()
+            for assignment in selected_assignments:
+                phone = assignment.volunteer.phone
+                name = assignment.volunteer.name
+                position = assignment.assigned_position
+                event_title = assignment.volunteering_event.title
+                date = assignment.volunteering_event.datetime.date()
+                formatted_message = message.format(name=name, volunteer_position=position, event=event_title, date=date)
+                token = signer.sign(assignment.id)
+                magic_link = request.build_absolute_uri(
+                    reverse('confirm_participation', args=[token])
+                )
+                full_message = f"{formatted_message} Please click here to confirm: {magic_link}"
+                messages_to_dispatch.append({
+                    "phone": phone,
+                    "message": full_message
+                })
+            print(messages_to_dispatch)
+            # Perform the sending of text messages here
+            # Implement your logic to send the messages
+
+            self.message_user(request, "Text messages sent successfully.")
+            return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
+
+        return render(request, 'admin/send_texts_confirm.html', context={
+            'event_id': ','.join(event_id),
+            "assignments": assignments
+        })
 
     class Media:
         js = ('js/admin_cook_food_drop_off.js',)
