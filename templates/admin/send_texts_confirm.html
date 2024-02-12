@@ -3,13 +3,12 @@
 {% block content %}
 <div class="content">
     <h1>Send Text Confirmation</h1>
-    <p>Are you sure you want to send texts to the selected volunteer event?</p>
-
     <form method="post">
-        {% csrf_token %}
-        <div>
-            <label for="custom_message">Customize the message (optional):</label>
-            <textarea id="custom_message" name="custom_message" rows="15" cols="70">
+    {% csrf_token %}
+        <div class="flex-container-custom">
+            <div class="message-box">
+                <label for="custom_message">Customize the message (optional):</label>
+                <textarea id="custom_message" name="custom_message">
 Hello {name},
 
 Great news! Your application to volunteer as a {volunteer_position} for the {event} on {date} has been approved. We look forward to your participation.
@@ -17,43 +16,87 @@ Great news! Your application to volunteer as a {volunteer_position} for the {eve
 Warm regards,
 
 Welfare Avenue Team
-            </textarea>
+                </textarea>
+            </div>
+            <div class="variables-box">
+                <p>Optional Variables: name, event, date, volunteer_position<br>
+                To use a variable, it has to be between curly braces e.g. {name}</p>
+                <ul class="variables-list">
+                    <li>name - volunteer's name</li>
+                    <li>event - event's title</li>
+                    <li>date - event's date e.g 2023-10-29</li>
+                    <li>volunteer_position - volunteer's position e.g. Cook</li>
+                </ul>
+            </div>
         </div>
-        <div>
-            <h2>Select Volunteers</h2>
-<table class="table-container">
-    {% for assignment in assignments %}
-        <tr>
-            <td>
-                <input type="checkbox" name="assignments" value="{{ assignment.id }}" class="volunteer-checkbox">
-                {{ assignment.volunteer.name }} ({{ assignment.assigned_position }})
-            </td>
-            {% if assignment.approve_participation %}
-            <td class='approved'>
-            {% else %}
-            <td class='not-approved'>
-            {% endif %}
-                {% if assignment.approve_participation %}
-                    Staff Approved
-                {% else %}
-                    Staff Has Not Approved
-                {% endif %}
-            </td>
-            {% if assignment.has_confirmed %}
-            <td class='approved'>
-            {% else %}
-            <td class='not-approved'>
-            {% endif %}
-                {% if assignment.has_confirmed %}
-                    Volunteer Confirmed
-                {% else %}
-                    Volunteer Has Not Confirmed
-                {% endif %}
-            </td>
-        </tr>
-    {% endfor %}
+        <h2>Select Volunteers</h2>
+    <table class="table-container">
+{#    <thead>#}
+{#        <tr>#}
+{#            <th>Volunteer</th>#}
+{#            <th>Staff Approval</th>#}
+{#            <th>Confirmation Sent</th>#}
+{#            <th>Volunteer Confirmation</th>#}
+{#        </tr>#}
+{#    </thead>#}
+    <tbody>
+        {% for position, group in assignments_grouped.items %}
+            <tr>
+            <td colspan="4" class="category-header">{{ position }}</td>
+            </tr>
+            {% for assignment in group %}
+                    <tr>
+                    <td>
+                        <input type="checkbox" name="assignments" value="{{ assignment.id }}" class="volunteer-checkbox">
+                        {{ assignment.volunteer.name }} ({{ assignment.assigned_position }})
+                        {% if assignment.waitlist_participation %}
+                        <span class="not-approved">Wait Listed</span>
+                        {% endif %}
+                    </td>
+                    {% if assignment.approve_participation %}
+                    <td class='approved'>
+                    {% else %}
+                    <td class='not-approved'>
+                    {% endif %}
+                        {% if assignment.approve_participation %}
+                            Staff Approved
+                        {% else %}
+                            Staff Has Not Approved
+                        {% endif %}
+                    </td>
+                    {% if assignment.confirmation_message_sent %}
+                    <td class='approved'>
+                    {% else %}
+                    <td class='not-approved'>
+                    {% endif %}
+                        {% if assignment.confirmation_message_sent %}
+                            Confirmation Link Sent
+                        {% else %}
+                            Confirmation Link Has Not Been Sent
+                        {% endif %}
+                    </td>
+                    {% if assignment.has_confirmed %}
+                    <td class='approved'>
+                    {% else %}
+                    <td class='not-approved'>
+                    {% endif %}
+                        {% if assignment.has_confirmed %}
+                            Volunteer Confirmed
+                        {% else %}
+                            Volunteer Has Not Confirmed
+                        {% endif %}
+                    </td>
+                    </tr>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
 </table>
-
+        <div class="magic-link-container">
+            <label>
+                <input type="checkbox" name="send_magic_link" />
+                <strong>Send Confirmation Link</strong>
+            </label>
+            <p class="text-muted">e.g. { Your message... } Please click here confirm: https://welfareave.org/... <br>NOTE: confirmation link upon being clicked sets has_confirmed=True e.i. NA for use cases other than volunteer's confirmation</p>
         </div>
 
         <input type="hidden" name="event_id" value="{{ event.id }}" />
