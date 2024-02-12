@@ -1,13 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.core.signing import Signer, BadSignature
 from django.http import HttpResponseRedirect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from backend.settings import DEFAULT_FROM_EMAIL, DJANGO_ENV, MY_APP_DOMAIN
-from api.models import WAGallery, ContactForm, AutomatedEmail
+from api.models import WAGallery, ContactForm, AutomatedEmail, VolunteerAssignment
 from api.serializers.base_serializers import WAGallerySerializer
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 
 
 @api_view(["GET"])
@@ -50,3 +51,17 @@ def submit_contact_form(request):
     except Exception as e:
         return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     return Response({"detail": "Thank you for contacting us, we will get back to you shortly."})
+
+
+def confirm_participation(request, token):
+    signer = Signer()
+    try:
+        assignment_id = signer.unsign(token)
+        assignment = get_object_or_404(VolunteerAssignment, id=assignment_id)
+        assignment.has_confirmed = True
+        # assignment.approve_participation = True  # ask
+        assignment.save()
+        return redirect('https://welfareave.org/participation-confirmed')
+    except BadSignature:
+        # Handle invalid token
+        return redirect('https://welfareave.org/participation-confirmation-failed')
