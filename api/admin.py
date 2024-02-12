@@ -45,7 +45,7 @@ class VolunteerAssignmentBackwardsInline(admin.TabularInline):  # or admin.Stack
     model = VolunteerAssignment
     fk_name = 'volunteer'  # ForeignKey field to the Volunteer model
     extra = 0
-    exclude = ['is_withdrawn']
+    exclude = ['is_withdrawn', 'food_drop_off', 'confirmation_message_sent', 'has_confirmed']
     readonly_fields = ['volunteering_event', 'assigned_position', 'approve_participation', 'volunteering_hours',
                        'confirm_participation', 'waitlist_participation', 'event_date']
 
@@ -80,7 +80,7 @@ class VolunteerAssignmentInline(admin.StackedInline):  # or admin.StackedInline
     model = VolunteerAssignment
     fk_name = 'volunteering_event'  # ForeignKey field to the Volunteer model
     extra = 0
-    exclude = ['is_withdrawn']
+    exclude = ['is_withdrawn', 'confirmation_message_sent', 'has_confirmed']
     readonly_fields = ['volunteer_address', 'volunteer_phone', 'volunteer_email']
     can_delete = True
 
@@ -109,7 +109,7 @@ class VolunteerImagesInline(admin.TabularInline):  # or admin.StackedInline
 
 @admin.register(VolunteeringEvents)
 class VolunteeringEventsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'datetime',  'hide_event', 'send_texts_button']
+    list_display = ['title', 'datetime',  'hide_event']  # , 'send_texts_button']
     list_editable = ['hide_event']
     list_per_page = 25
     inlines = [VolunteerAssignmentInline, VolunteerImagesInline]
@@ -158,16 +158,45 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
+    @staticmethod
+    def create_verification_message(request, assignment, signer, og_message):
+        token = signer.sign(assignment.id)
+        magic_link = request.build_absolute_uri(
+            reverse('confirm_participation', args=[token])
+        )
+        return f"{og_message} Please click here to confirm: {magic_link}"
+
+    @staticmethod
+    def categorize_assignment(assignment):
+        if assignment.assigned_position == 'Cook':
+            return 'Cooks'
+        elif assignment.assigned_position == 'Server':
+            return 'Servers'
+        elif assignment.assigned_position == 'Driver':
+            return 'Drivers'
+        else:
+            return 'Others'
+
     def send_texts_confirm(self, request, event_id):
         if event_id is None:
             self.message_user(request, "No events selected.")
             return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
 
         assignments = VolunteerAssignment.objects.filter(volunteering_event=event_id)
+        grouped_assignments = {
+            'Cooks': [],
+            'Servers': [],
+            'Drivers': [],
+            'Others': []
+        }
+        for assignment in assignments:
+            category = self.categorize_assignment(assignment)
+            grouped_assignments[category].append(assignment)
 
         if 'confirm_send' in request.POST:
             selected_assignments = VolunteerAssignment.objects.filter(id__in=request.POST.getlist('assignments'))
             message = request.POST.get('custom_message')
+            is_verification_message = bool(request.POST.get('send_magic_link'))
             messages_to_dispatch = list()
             signer = Signer()
             for assignment in selected_assignments:
@@ -176,15 +205,17 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
                 position = assignment.assigned_position
                 event_title = assignment.volunteering_event.title
                 date = assignment.volunteering_event.datetime.date()
-                formatted_message = message.format(name=name, volunteer_position=position, event=event_title, date=date)
-                token = signer.sign(assignment.id)
-                magic_link = request.build_absolute_uri(
-                    reverse('confirm_participation', args=[token])
-                )
-                full_message = f"{formatted_message} Please click here to confirm: {magic_link}"
+                message = message.format(name=name, volunteer_position=position, event=event_title, date=date)
+                if is_verification_message:
+                    assignment.waitlist_participation = False
+                    assignment.approve_participation = True  # if verification message is sent, it approves application
+                    assignment.confirmation_message_sent = True
+                    assignment.save()
+                    message = self.create_verification_message(request, assignment, signer, message)
+
                 messages_to_dispatch.append({
                     "phone": phone,
-                    "message": full_message
+                    "message": message
                 })
             print(messages_to_dispatch)
             # Perform the sending of text messages here
@@ -195,7 +226,7 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
 
         return render(request, 'admin/send_texts_confirm.html', context={
             'event_id': ','.join(event_id),
-            "assignments": assignments
+            "assignments_grouped": grouped_assignments,
         })
 
     class Media:
