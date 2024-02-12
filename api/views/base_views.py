@@ -59,7 +59,6 @@ def confirm_participation(request, token):
         assignment_id = signer.unsign(token)
         assignment = get_object_or_404(VolunteerAssignment, id=assignment_id)
         assignment.has_confirmed = True
-        # assignment.approve_participation = True  # ask
         assignment.save()
         return redirect('https://welfareave.org/participation-confirmed')
     except BadSignature:
