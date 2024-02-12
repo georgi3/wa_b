@@ -98,7 +98,7 @@ class Volunteer(models.Model):
 
     def __str__(self):
         if self.user_id:
-            return f"Volunteer {self.user_id.first_name} {self.user_id.last_name}"
+            return f"{self.user_id.first_name} {self.user_id.last_name}"
         else:
             return "Volunteer (User DNE)"
 
@@ -157,7 +157,7 @@ class VolunteerAssignment(models.Model):
                                                 help_text="Check to confirm volunteer's participation", default=False)
     is_withdrawn = models.BooleanField("Is Withdrawn", help_text="Applicant Withdrew their application", default=False)
     waitlist_participation = models.BooleanField("Waitlist", help_text="Check to waitlist the applicant", default=False)
-    food_drop_off = models.BooleanField('Food Is Dropped Off', help_text='Cook will drop off the food', default=False,
+    food_drop_off = models.BooleanField('Food Is Dropped Off', help_text='Cook will drop off the food', default=None,
                                         null=True, blank=True)
     confirmation_message_sent = models.BooleanField(default=False)
     has_confirmed = models.BooleanField(default=False)
