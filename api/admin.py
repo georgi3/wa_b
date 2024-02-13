@@ -151,12 +151,11 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
     @staticmethod
-    def create_verification_message(request, assignment, signer, og_message):
+    def create_magic_link(request, assignment, signer):
         token = signer.sign(assignment.id)
-        magic_link = request.build_absolute_uri(
-            reverse('confirm_participation', args=[token])
-        )
-        return f"{og_message} Please click here to confirm: {magic_link}"
+        magic_link = request.build_absolute_uri(reverse('confirm_participation', args=[token]))
+        return f"\nBy clicking this link you confirm your participation: {magic_link}\n\nWarm regards,\n" \
+               f"Welfare Avenue Team"
 
     @staticmethod
     def categorize_assignment(assignment):
@@ -193,23 +192,26 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
             signer = Signer()
             for assignment in selected_assignments:
                 phone = assignment.volunteer.phone
-                name = assignment.volunteer.name
+                name = " ".join(n.capitalize() for n in assignment.volunteer.name.split(" "))
                 position = assignment.assigned_position
                 event_title = assignment.volunteering_event.title
                 date = assignment.volunteering_event.datetime.date()
-                message = message.format(name=name, volunteer_position=position, event=event_title, date=date)
+                magic_link = ''
                 if is_verification_message:
                     assignment.waitlist_participation = False
                     assignment.approve_participation = True  # if verification message is sent, it approves application
                     assignment.confirmation_message_sent = True
                     assignment.save()
-                    message = self.create_verification_message(request, assignment, signer, message)
-
+                    magic_link = self.create_magic_link(request, assignment, signer)
+                message = message.format(name=name, volunteer_position=position, event=event_title, date=date)
                 messages_to_dispatch.append({
                     "phone": phone,
-                    "message": message
+                    "message": message+magic_link
                 })
-            print(messages_to_dispatch)
+            for m in messages_to_dispatch:
+                print(m['phone'])
+                print(m['message'])
+                print()
             # Perform the sending of text messages here
             # Implement your logic to send the messages
 
