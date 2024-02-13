@@ -12,10 +12,10 @@
 Hello {name},
 
 Great news! Your application to volunteer as a {volunteer_position} for the {event} on {date} has been approved. We look forward to your participation.
-
-Warm regards,
-
-Welfare Avenue Team</textarea>
+</textarea>
+                <p class="text-muted">
+                    <strong>NOTE: each message ends with the following:</strong> <br><i>By clicking this link you confirm your participation: {magic_link} – (Optional)<br>Warm regards,<br>Welfare Avenue Team</i>
+                </p>
             </div>
             <div class="variables-box">
                 <p>Optional Variables: name, event, date, volunteer_position<br>
@@ -88,7 +88,8 @@ Welfare Avenue Team</textarea>
                 <input type="checkbox" name="send_magic_link" />
                 <strong>Send Confirmation Link</strong>
             </label>
-            <p class="text-muted">e.g. { Your message... } Please click here confirm: https://welfareave.org/... <br>NOTE: confirmation link upon being clicked sets has_confirmed=True e.i. NA for use cases other than volunteer's confirmation</p>
+            <p class="text-muted">e.g. By clicking this link you confirm your participation: {magic_link}
+                <br>NOTE: confirmation link upon being clicked sets has_confirmed=True e.i. NA for use cases other than volunteer's confirmation</p>
         </div>
 
         <input type="hidden" name="event_id" value="{{ event.id }}" />
