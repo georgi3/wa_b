@@ -13,7 +13,7 @@ def get_all_events(request):
     current_dt = timezone.now()
     fr_events = FundraiserEvents.objects.all().exclude(datetime__lt=current_dt, par1="", imgHero__isnull=False)
     fr_serializer = FundraiserEventsSerializer(fr_events, many=True)
-    vol_events = VolunteeringEvents.objects.all().exclude(datetime__lt=current_dt, summary="")
+    vol_events = VolunteeringEvents.objects.all().exclude(datetime__lt=current_dt, summary="", hide_event=True)
     vol_serializer = VolunteeringEventsSerializer(vol_events, many=True)
     return Response([*vol_serializer.data, *fr_serializer.data])
 
