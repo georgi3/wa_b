@@ -11,8 +11,9 @@ from api.utilities.views_utilities import get_volunteering_spots, get_applicatio
 @api_view(["GET"])
 def get_all_events(request):
     current_dt = timezone.now()
-    fr_events = FundraiserEvents.objects.filter(hide_event=False).exclude(datetime__lt=current_dt, par1="",
-                                                                          imgHero__isnull=False)
+    fr_events = FundraiserEvents.objects.filter(hide_event=False).exclude(
+        Q(datetime__lt=current_dt) & (Q(par1="") | Q(imgHero__isnull=False))
+    )
     fr_serializer = FundraiserEventsSerializer(fr_events, many=True)
     vol_events = VolunteeringEvents.objects.filter(hide_event=False).exclude(datetime__lt=current_dt, summary="")
     vol_serializer = VolunteeringEventsSerializer(vol_events, many=True)
