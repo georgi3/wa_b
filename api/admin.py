@@ -170,7 +170,7 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
 
         if 'confirm_send' in request.POST:
             selected_assignments = VolunteerAssignment.objects.filter(id__in=request.POST.getlist('assignments'))
-            message = request.POST.get('custom_message')
+            message_template = request.POST.get('custom_message')
             is_verification_message = bool(request.POST.get('send_magic_link'))
             signer = Signer()
             for assignment in selected_assignments:
@@ -186,7 +186,7 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
                     assignment.confirmation_message_sent = True
                     assignment.save()
                     magic_link = self.create_magic_link(request, assignment, signer)
-                message = message.format(name=name, volunteer_position=position, event=event_title, date=date)
+                message = message_template.format(name=name, volunteer_position=position, event=event_title, date=date)
                 data = json.dumps({
                     "phone": phone,
                     "message": message+magic_link
