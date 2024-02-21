@@ -1,6 +1,9 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, path
+from django.contrib import messages
+import requests
+import json
 from django.utils.html import format_html
 from django.core.signing import Signer
 from .filters import EventDateFilter, EventStatusFilter, CompleteFundraiserFilter
@@ -173,6 +176,7 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
             self.message_user(request, "No events selected.")
             return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
 
+        event = VolunteeringEvents.objects.get(id=event_id)
         assignments = VolunteerAssignment.objects.filter(volunteering_event=event_id)
         grouped_assignments = {
             'Cooks': [],
@@ -191,6 +195,7 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
             messages_to_dispatch = list()
             signer = Signer()
             for assignment in selected_assignments:
+                """Sending two messages to the same user seem not to work, double check!!!"""
                 phone = assignment.volunteer.phone
                 name = " ".join(n.capitalize() for n in assignment.volunteer.name.split(" "))
                 position = assignment.assigned_position
@@ -208,18 +213,20 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
                     "phone": phone,
                     "message": message+magic_link
                 })
-            for m in messages_to_dispatch:
-                print(m['phone'])
-                print(m['message'])
-                print()
-            # Perform the sending of text messages here
-            # Implement your logic to send the messages
-
-            self.message_user(request, "Text messages sent successfully.")
+            data = json.dumps(messages_to_dispatch)
+            url = "https://hooks.zapier.com/hooks/catch/10986779/3eooaq7/"
+            headers = {'Content-Type': 'application/json'}
+            response = requests.post(url, data=data, headers=headers)
+            if response.status_code == 200:
+                self.message_user(request, "Text messages sent successfully.")
+            else:
+                self.message_user(request, f"Failed to Send Messages: \nStatus Code:{response.status_code}\nHeaders: "
+                                           f"{response.headers}\nMessage:{response.json()}", level=messages.ERROR)
             return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
 
         return render(request, 'admin/send_texts_confirm.html', context={
             'event_id': ','.join(event_id),
+            'event': event,
             "assignments_grouped": grouped_assignments,
         })
 
