@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.core.signing import Signer, BadSignature
 from django.http import HttpResponseRedirect
+from django.db import transaction
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -57,9 +58,11 @@ def confirm_participation(request, token):
     signer = Signer()
     try:
         assignment_id = signer.unsign(token)
-        assignment = get_object_or_404(VolunteerAssignment, id=assignment_id)
-        assignment.has_confirmed = True
-        assignment.save()
+        with transaction.atomic():
+            # Lock the assignment row until the end of the transaction block
+            assignment = VolunteerAssignment.objects.select_for_update().get(id=assignment_id)
+            assignment.has_confirmed = True
+            assignment.save()
         return redirect('https://welfareave.org/participation-confirmed')
     except BadSignature:
         # Handle invalid token
