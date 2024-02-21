@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 <div class="content">
-    <h1>Send Text Confirmation</h1>
+    <h1>Send Text Confirmation - {{ event.title }} on {{ event.datetime | date }}</h1>
     <form method="post">
     {% csrf_token %}
         <div class="flex-container-custom">
