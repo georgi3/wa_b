@@ -104,7 +104,7 @@ class VolunteerImagesInline(admin.TabularInline):  # or admin.StackedInline
 
 @admin.register(VolunteeringEvents)
 class VolunteeringEventsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'datetime',  'hide_event']  # , 'send_texts_button']
+    list_display = ['title', 'datetime', 'hide_event']  # , 'send_texts_button']
     list_editable = ['hide_event']
     list_per_page = 25
     inlines = [VolunteerAssignmentInline, VolunteerImagesInline]
@@ -121,26 +121,6 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
         )
     send_texts_button.short_description = "Send Texts to Volunteers"
     send_texts_button.allow_tags = True
-
-    # def send_texts(self, request, assignments_ids, message):
-    #     selected_assignments = VolunteerAssignment.objects.filter(id__in=assignments_ids)
-    #     messages_to_dispatch = list()
-    #     for assignment in selected_assignments:
-    #         phone = assignment.volunteer.phone
-    #         name = assignment.volunteer.name
-    #         position = assignment.assigned_position
-    #         event_title = assignment.volunteering_event.title
-    #         date = assignment.volunteering_event.datetime.date()
-    #         messages_to_dispatch.append({
-    #             "phone": phone,
-    #             "message": message.format(name=name, volunteer_position=position, event=event_title, date=date)
-    #         })
-    #     print(messages_to_dispatch)
-    #     # Perform the sending of text messages here
-    #     # Implement your logic to send the messages
-    #
-    #     self.message_user(request, "Text messages sent successfully.")
-    #     return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
 
     def get_urls(self):
         urls = super().get_urls()
@@ -192,10 +172,8 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
             selected_assignments = VolunteerAssignment.objects.filter(id__in=request.POST.getlist('assignments'))
             message = request.POST.get('custom_message')
             is_verification_message = bool(request.POST.get('send_magic_link'))
-            messages_to_dispatch = list()
             signer = Signer()
             for assignment in selected_assignments:
-                """Sending two messages to the same user seem not to work, double check!!!"""
                 phone = assignment.volunteer.phone
                 name = " ".join(n.capitalize() for n in assignment.volunteer.name.split(" "))
                 position = assignment.assigned_position
@@ -209,19 +187,19 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
                     assignment.save()
                     magic_link = self.create_magic_link(request, assignment, signer)
                 message = message.format(name=name, volunteer_position=position, event=event_title, date=date)
-                messages_to_dispatch.append({
+                data = json.dumps({
                     "phone": phone,
                     "message": message+magic_link
                 })
-            data = json.dumps(messages_to_dispatch)
-            url = "https://hooks.zapier.com/hooks/catch/10986779/3eooaq7/"
-            headers = {'Content-Type': 'application/json'}
-            response = requests.post(url, data=data, headers=headers)
-            if response.status_code == 200:
-                self.message_user(request, "Text messages sent successfully.")
-            else:
-                self.message_user(request, f"Failed to Send Messages: \nStatus Code:{response.status_code}\nHeaders: "
-                                           f"{response.headers}\nMessage:{response.json()}", level=messages.ERROR)
+                url = "https://hooks.zapier.com/hooks/catch/10986779/3eooaq7/"
+                headers = {'Content-Type': 'application/json'}
+                response = requests.post(url, json=data, headers=headers)
+                if response.status_code == 200:
+                    self.message_user(request, f"Text message to {assignment.volunteer.name} sent successfully.")
+                else:
+                    self.message_user(request, f"Failed to Send Message to {assignment.volunteer.name}:"
+                                               f" \nStatus Code:{response.status_code}\nHeaders: "
+                                               f"{response.headers}\nMessage:{response.json()}", level=messages.ERROR)
             return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
 
         return render(request, 'admin/send_texts_confirm.html', context={
