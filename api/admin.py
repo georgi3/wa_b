@@ -112,7 +112,7 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
                export_event_volunteers_to_sheets]
     search_fields = ['title']
     list_filter = [EventDateFilter, EventStatusFilter, 'hide_event']
-    ordering = ['datetime']
+    ordering = ('-datetime',)
 
     def send_texts_button(self, obj):
         return format_html(
@@ -247,7 +247,7 @@ class FundraiserEventsAdmin(admin.ModelAdmin):
     list_per_page = 25
     inlines = [FundraisingImagesInline]
     actions = [hide_published_events, publish_hidden_events]
-    ordering = ['datetime']
+    ordering = ('-datetime', )
     list_filter = [CompleteFundraiserFilter, 'hide_event']
 
 
