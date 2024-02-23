@@ -24,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config.get('django', 'SECRET_KEY')
 DJANGO_ENV = config.get('django', "DJANGO_ENV")
 MY_APP_DOMAIN = config.get('django', 'MY_APP_DOMAIN')
+ZAPIER_WEBHOOK = config.get('zapier', 'ZAPIER_WEBHOOK')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_ENV == "development"
 
