@@ -5,7 +5,8 @@ from django.contrib import messages
 import requests
 import json
 from django.utils.html import format_html
-from django.core.signing import Signer
+from django.core.signing import TimestampSigner
+from backend.settings import DJANGO_ENV, MY_APP_DOMAIN, ZAPIER_WEBHOOK
 from .filters import EventDateFilter, EventStatusFilter, CompleteFundraiserFilter
 from .models import VolunteeringEvents, FundraiserEvents, UserProfile, Volunteer, VolunteerAssignment, \
     VolunteeringPhotoGallery, FundraisingPhotoGallery, WAGallery, WAPhotos, AutomatedEmail, ContactForm
@@ -135,9 +136,12 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
 
     @staticmethod
     def create_magic_link(request, assignment, signer):
-        token = signer.sign(assignment.id)
-        magic_link = request.build_absolute_uri(reverse('confirm_participation', args=[token]))
-        return f"\nBy clicking this link you confirm your participation: {magic_link}\n\nWarm regards,\n" \
+        token = signer.sign(str(assignment.id))
+        if DJANGO_ENV == 'development':
+            url = f'http://localhost:3000/confirm_participation?token={token}'
+        else:
+            url = f'https://{MY_APP_DOMAIN}/confirm_participation?token={token}'
+        return f"\nPlease confirm your participation using this link: {url}\n\nWarm regards,\n" \
                f"Welfare Avenue Team"
 
     @staticmethod
@@ -172,7 +176,7 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
             selected_assignments = VolunteerAssignment.objects.filter(id__in=request.POST.getlist('assignments'))
             message_template = request.POST.get('custom_message')
             is_verification_message = bool(request.POST.get('send_magic_link'))
-            signer = Signer()
+            signer = TimestampSigner()
             for assignment in selected_assignments:
                 phone = assignment.volunteer.phone
                 name = " ".join(n.capitalize() for n in assignment.volunteer.name.split(" "))
@@ -191,9 +195,8 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
                     "phone": phone,
                     "message": message+magic_link
                 })
-                url = "https://hooks.zapier.com/hooks/catch/10986779/3eooaq7/"
                 headers = {'Content-Type': 'application/json'}
-                response = requests.post(url, json=data, headers=headers)
+                response = requests.post(ZAPIER_WEBHOOK, json=data, headers=headers)
                 if response.status_code == 200:
                     self.message_user(request, f"Text message to {assignment.volunteer.name} sent successfully.")
                 else:
