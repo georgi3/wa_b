@@ -156,6 +156,9 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
             return 'Others'
 
     def send_texts_confirm(self, request, event_id):
+        if not self.has_change_permission(request):
+            self.message_user(request, "You do not have permission to send texts.", level=messages.ERROR)
+            return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
         if event_id is None:
             self.message_user(request, "No events selected.")
             return HttpResponseRedirect(reverse('admin:api_volunteeringevents_changelist'))
