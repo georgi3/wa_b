@@ -1,6 +1,8 @@
+import json
+from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.core.signing import Signer, BadSignature
+from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.http import HttpResponseRedirect
 from django.db import transaction
 from rest_framework import status
@@ -54,16 +56,23 @@ def submit_contact_form(request):
     return Response({"detail": "Thank you for contacting us, we will get back to you shortly."})
 
 
-def confirm_participation(request, token):
-    signer = Signer()
+@api_view(["POST"])
+def confirm_participation(request):
+    signer = TimestampSigner()
     try:
-        assignment_id = signer.unsign(token)
+        token = json.loads(request.body).get('token')
+        assignment_id = signer.unsign(token, max_age=timedelta(hours=24))
         with transaction.atomic():
             # Lock the assignment row until the end of the transaction block
             assignment = VolunteerAssignment.objects.select_for_update().get(id=assignment_id)
+            if assignment.has_confirmed:
+                return Response({'status': 'success', 'message': 'Participation has already been confirmed.'})
+
             assignment.has_confirmed = True
             assignment.save()
-        return redirect('https://welfareave.org/participation-confirmed')
+            return Response({'status': 'success', 'message': 'Participation confirmed'})
+
+    except SignatureExpired:
+        return Response({'status': 'error', 'message': 'Link has expired, please reach out to our team.'}, status=410)
     except BadSignature:
-        # Handle invalid token
-        return redirect('https://welfareave.org/participation-confirmation-failed')
+        return Response({'status': 'error', 'message': 'Invalid token'}, status=400)
