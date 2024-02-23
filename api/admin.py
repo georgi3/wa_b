@@ -105,7 +105,7 @@ class VolunteerImagesInline(admin.TabularInline):  # or admin.StackedInline
 
 @admin.register(VolunteeringEvents)
 class VolunteeringEventsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'datetime', 'hide_event']  # , 'send_texts_button']
+    list_display = ['title', 'datetime', 'hide_event', 'send_texts_button']
     list_editable = ['hide_event']
     list_per_page = 25
     inlines = [VolunteerAssignmentInline, VolunteerImagesInline]
@@ -138,9 +138,9 @@ class VolunteeringEventsAdmin(admin.ModelAdmin):
     def create_magic_link(request, assignment, signer):
         token = signer.sign(str(assignment.id))
         if DJANGO_ENV == 'development':
-            url = f'http://localhost:3000/confirm_participation?token={token}'
+            url = f'http://localhost:3000/confirm-participation?token={token}'
         else:
-            url = f'https://{MY_APP_DOMAIN}/confirm_participation?token={token}'
+            url = f'https://{MY_APP_DOMAIN}/confirm-participation?token={token}'
         return f"\nPlease confirm your participation using this link: {url}\n\nWarm regards,\n" \
                f"Welfare Avenue Team"
 
