@@ -1,7 +1,7 @@
 import json
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage, send_mail
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.http import HttpResponseRedirect
 from django.db import transaction
@@ -35,15 +35,16 @@ def submit_contact_form(request):
             subject=subject,
             content=content
         )
-        # send note to sender
-        send_mail(
+        # send note to us
+        email_to_us = EmailMessage(
             subject=subject,
-            message=content,
+            body=content,
             from_email=DEFAULT_FROM_EMAIL,
-            recipient_list=[DEFAULT_FROM_EMAIL],
-            fail_silently=False
+            to=[DEFAULT_FROM_EMAIL],
+            cc=[email],
         )
-        # send email to us
+        email_to_us.send(fail_silently=False)
+        # automated reply to sender
         send_mail(
             subject=form_submission_email.email_subject.format(name=name),
             message=form_submission_email.email_content.format(name=name),
