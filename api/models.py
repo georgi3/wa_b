@@ -13,6 +13,12 @@ class UserProfile(models.Model):
 
 
 class VolunteeringEvents(models.Model):
+    MONTREAL = "Montreal"
+    TORONTO = "Toronto"
+    CITY_CHOICES = [
+        (MONTREAL, "Montreal"),
+        (TORONTO, "Toronto"),
+    ]
     title = models.CharField("Event Title", max_length=100)
     event_poster = models.ImageField("Event Poster", null=True)
     body = models.TextField("Event Description")
@@ -29,6 +35,7 @@ class VolunteeringEvents(models.Model):
     servers_num = models.IntegerField("# of Servers", default=5)
     dishwashers_num = models.IntegerField("# of Dishwashers", default=1)
     photographers_num = models.IntegerField("# of Photographers", default=1)
+    city = models.TextField(max_length=25, choices=CITY_CHOICES, blank=False, default=MONTREAL)
 
     def __str__(self):
         return self.title.title()

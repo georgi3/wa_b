@@ -17,7 +17,7 @@ class VolunteeringEventsSerializer(serializers.ModelSerializer):
         model = VolunteeringEvents
         fields = ["id", "title", "event_poster", "body", "datetime", "location", "end_time", "mealsServed", "summary",
                   "hide_event", "datetime_created", "datetime_updated", "driver_num", "cook_num", "servers_num",
-                  "dishwashers_num", "photographers_num", "images"]
+                  "dishwashers_num", "photographers_num", "images", "city"]
 
     def get_images(self, obj):
         images = VolunteeringPhotoGallery.objects.filter(event=obj.id)
@@ -31,7 +31,7 @@ class VolunteeringEventSerializer(serializers.ModelSerializer):
         model = VolunteeringEvents
         fields = ["id", "title", "event_poster", "body", "datetime", "location", "end_time", "mealsServed", "summary",
                   "hide_event", "datetime_created", "datetime_updated", "driver_num", "cook_num", "servers_num",
-                  "dishwashers_num", "photographers_num", "images", "linked_volunteers"]
+                  "dishwashers_num", "photographers_num", "images", "linked_volunteers", "city"]
 
     def get_images(self, obj):
         images = VolunteeringPhotoGallery.objects.filter(event=obj.id)

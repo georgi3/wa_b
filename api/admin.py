@@ -105,14 +105,14 @@ class VolunteerImagesInline(admin.TabularInline):  # or admin.StackedInline
 
 @admin.register(VolunteeringEvents)
 class VolunteeringEventsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'datetime', 'hide_event', 'send_texts_button']
+    list_display = ['title', 'datetime', 'hide_event', 'city', 'send_texts_button']
     list_editable = ['hide_event']
     list_per_page = 25
     inlines = [VolunteerAssignmentInline, VolunteerImagesInline]
     actions = [hide_published_events, publish_hidden_events, export_event_volunteers_to_excel,
                export_event_volunteers_to_sheets]
     search_fields = ['title']
-    list_filter = [EventDateFilter, EventStatusFilter, 'hide_event']
+    list_filter = [EventDateFilter, EventStatusFilter, 'hide_event', 'city']
     ordering = ('-datetime',)
 
     def send_texts_button(self, obj):
