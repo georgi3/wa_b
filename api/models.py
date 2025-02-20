@@ -111,7 +111,7 @@ class Volunteer(models.Model):
 
     @property
     def total_volunteering_hours(self):
-        return self.assignments.filter(confirm_participation=True).aggregate(
+        return self.assignments.filter(attended=True).aggregate(
             total_hours=models.Sum('volunteering_hours'))['total_hours'] or 0
 
     @property
@@ -120,7 +120,7 @@ class Volunteer(models.Model):
         total_hours = self.assignments.filter(
             volunteering_event__datetime__gte=thirty_days_ago,
             volunteering_event__datetime__lte=timezone.now(),
-            confirm_participation=True
+            attended=True
         ).aggregate(
             total_hours=models.Sum('volunteering_hours')
         )['total_hours']
@@ -160,14 +160,15 @@ class VolunteerAssignment(models.Model):
     approve_participation = models.BooleanField("Approved", help_text="Check to approve participation for the event",
                                                 default=False)
     volunteering_hours = models.IntegerField("Actual Volunteering Hours", default=2, blank=True, null=True)
-    confirm_participation = models.BooleanField("Participation Confirmed",
-                                                help_text="Check to confirm volunteer's participation", default=False)
+    confirm_participation = models.BooleanField("Volunteer Confirmed Participation",
+                                                help_text="Gets checked if volunteer confirmed participation via a link", default=False)
+    attended = models.BooleanField("Attended", default=False, blank=True)
     is_withdrawn = models.BooleanField("Is Withdrawn", help_text="Applicant Withdrew their application", default=False)
     waitlist_participation = models.BooleanField("Waitlist", help_text="Check to waitlist the applicant", default=False)
     food_drop_off = models.BooleanField('Food Is Dropped Off', help_text='Cook will drop off the food', default=None,
                                         null=True, blank=True)
     confirmation_message_sent = models.BooleanField(default=False)
-    has_confirmed = models.BooleanField(default=False)
+    # has_confirmed = models.BooleanField(default=False)
 
     _approve_participation_cache = None
     _confirm_participation_cache = None
