@@ -66,10 +66,10 @@ def confirm_participation(request):
         with transaction.atomic():
             # Lock the assignment row until the end of the transaction block
             assignment = VolunteerAssignment.objects.select_for_update().get(id=assignment_id)
-            if assignment.has_confirmed:
+            if assignment.confirm_participation:
                 return Response({'status': 'success', 'message': 'Participation has already been confirmed.'})
 
-            assignment.has_confirmed = True
+            assignment.confirm_participation = True
             assignment.save()
             return Response({'status': 'success', 'message': 'Participation confirmed'})
 
