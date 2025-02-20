@@ -67,12 +67,12 @@ Great news! Your application to volunteer as a {volunteer_position} for the {eve
                             Confirmation Link Has Not Been Sent
                         {% endif %}
                     </td>
-                    {% if assignment.has_confirmed %}
+                    {% if assignment.confirm_participation %}
                     <td class='approved'>
                     {% else %}
                     <td class='not-approved'>
                     {% endif %}
-                        {% if assignment.has_confirmed %}
+                        {% if assignment.confirm_participation %}
                             Volunteer Confirmed
                         {% else %}
                             Volunteer Has Not Confirmed
