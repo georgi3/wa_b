@@ -62,7 +62,7 @@ def confirm_participation(request):
     signer = TimestampSigner()
     try:
         token = json.loads(request.body).get('token')
-        assignment_id = signer.unsign(token, max_age=timedelta(hours=24))
+        assignment_id = signer.unsign(token, max_age=timedelta(hours=24*5))
         with transaction.atomic():
             # Lock the assignment row until the end of the transaction block
             assignment = VolunteerAssignment.objects.select_for_update().get(id=assignment_id)
