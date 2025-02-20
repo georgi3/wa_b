@@ -49,7 +49,7 @@ class VolunteerAssignmentBackwardsInline(admin.TabularInline):  # or admin.Stack
     model = VolunteerAssignment
     fk_name = 'volunteer'  # ForeignKey field to the Volunteer model
     extra = 0
-    exclude = ['is_withdrawn', 'food_drop_off', 'confirmation_message_sent', 'has_confirmed']
+    exclude = ['is_withdrawn', 'food_drop_off', 'confirmation_message_sent']
     readonly_fields = ['volunteering_event', 'assigned_position', 'approve_participation', 'volunteering_hours',
                        'confirm_participation', 'waitlist_participation', 'event_date']
 
@@ -84,8 +84,9 @@ class VolunteerAssignmentInline(admin.TabularInline):  # or admin.StackedInline
     model = VolunteerAssignment
     fk_name = 'volunteering_event'  # ForeignKey field to the Volunteer model
     extra = 0
-    exclude = ['is_withdrawn', 'confirmation_message_sent', 'has_confirmed']
-    readonly_fields = ['details']
+    fields = ['assigned_position', 'volunteer', 'approve_participation', 'confirm_participation', 'waitlist_participation', 'volunteering_hours', 'attended', 'food_drop_off', 'details']
+    exclude = ['is_withdrawn', 'confirmation_message_sent']
+    readonly_fields = ['confirm_participation', 'details']
     can_delete = True
 
     def has_delete_permission(self, request, obj=None):
