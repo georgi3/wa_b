@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from api.utilities.model_utils import next_sunday_14_30
+from .utilities.model_utils import next_sunday_noon
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -19,12 +21,12 @@ class VolunteeringEvents(models.Model):
         (MONTREAL, "Montreal"),
         (TORONTO, "Toronto"),
     ]
-    title = models.CharField("Event Title", max_length=100)
+    title = models.CharField("Event Title", max_length=100, default="OPEN TO EVERYONE💚")
     event_poster = models.ImageField("Event Poster", null=True)
-    body = models.TextField("Event Description")
-    datetime = models.DateTimeField("Date&Time", help_text="24 hour clock")
+    body = models.TextField("Event Description",  default="Hey Future and Recurring Volunteers, This is our standard volunteering event! OPEN TO ALL! Please sign up for the position most suitable for you! We can't wait to see you out there💚")
+    datetime = models.DateTimeField("Date&Time", help_text="24 hour clock", default=next_sunday_noon)
     location = models.CharField("Location", max_length=100, default="Berri-UQAM")
-    end_time = models.TimeField("Ending Time", help_text="24 hour clock")
+    end_time = models.TimeField("Ending Time", help_text="24 hour clock", default=next_sunday_14_30)
     mealsServed = models.IntegerField("Meals Served", blank=True, null=True)
     summary = models.TextField("Event Summary", blank=True, null=True)
     hide_event = models.BooleanField('Hide Event', help_text='Uncheck to display this event.', default=False)
