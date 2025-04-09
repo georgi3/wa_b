@@ -22,6 +22,8 @@ class VolunteeringEvents(models.Model):
         (TORONTO, "Toronto"),
     ]
     title = models.CharField("Event Title", max_length=100, default="OPEN TO EVERYONE💚")
+    is_colab = models.BooleanField("Collaboration Event", max_length=100, default=False, help_text="Is it a collaboration event?", blank=True)
+    collab_code = models.CharField("Collaboration Code", max_length=8, help_text="For collab events only!", blank=True, null=True)
     event_poster = models.ImageField("Event Poster", null=True)
     body = models.TextField("Event Description",  default="Hey Future and Recurring Volunteers, This is our standard volunteering event! OPEN TO ALL! Please sign up for the position most suitable for you! We can't wait to see you out there💚")
     datetime = models.DateTimeField("Date&Time", help_text="24 hour clock", default=next_sunday_noon)

@@ -130,6 +130,12 @@ def volunteer_application(request):
             defaults=update_fields
         )
         event = get_object_or_404(VolunteeringEvents, pk=event_id)
+        if event.is_colab:
+            code = request.data.get('colab_pass')
+            if code != event.collab_code:
+                return Response({"detail": "You have entered incorrect code."},
+                                status=status.HTTP_400_BAD_REQUEST)
+
         add_position_to_profile(position=vol_position, volunteer=volunteer)
         update_last_application_date(volunteer=volunteer)
         if VolunteerAssignment.objects.filter(volunteering_event=event, volunteer=volunteer,
