@@ -2,7 +2,6 @@ from django.contrib.auth import logout
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.contrib.auth.decorators import login_required
@@ -112,7 +111,7 @@ def update_user_profile(request):
 
 
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def volunteer_application(request):
     try:
         event_id = int(request.data.get('event_id'))
